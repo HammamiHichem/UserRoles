@@ -11,7 +11,7 @@
     <!-- Section conditionnelle : Connexion ou boutons -->
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
-            @if (User.Identity.IsAuthenticated)
+            @if (User?.Identity?.IsAuthenticated == true)
             {
                 <div class="alert alert-success p-4 mb-5 rounded-4 shadow-sm text-center">
                     <h5 class="mb-3">✅ Connexion réussie !</h5>

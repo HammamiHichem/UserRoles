@@ -1,28 +1,55 @@
 @model IEnumerable<UserRoles.ViewModels.EditUserRolesViewModel>
+
 @{
     ViewData["Title"] = "Gérer les rôles des utilisateurs";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container my-5">
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-people-fill me-2"></i>@ViewData["Title"]
+    </h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Rôles</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.UserEmail</td>
-                <td>@string.Join(", ", user.Roles.Where(r => r.IsSelected).Select(r => r.RoleName))</td>
-                <td>
-                    <a asp-action="EditUserRoles" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Modifier</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="bi bi-envelope-at-fill me-1"></i>Email</th>
+                            <th><i class="bi bi-shield-lock-fill me-1"></i>Rôles</th>
+                            <th><i class="bi bi-gear-fill me-1"></i>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@user.UserEmail</td>
+                                <td>
+                                    @if (user.Roles.Any(r => r.IsSelected))
+                                    {
+                                        @foreach (var role in user.Roles.Where(r => r.IsSelected))
+                                        {
+                                            <span class="badge bg-info text-dark me-1 mb-1">
+                                                <i class="bi bi-person-badge-fill me-1"></i>@role.RoleName
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Aucun rôle</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="EditUserRoles" asp-route-id="@user.UserId" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil-square me-1"></i>Modifier
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

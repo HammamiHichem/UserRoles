@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using UserRoles.Models;
 using UserRoles.ViewModels;
 
@@ -24,7 +25,7 @@ namespace UserRoles.Controllers
 
          public async Task<IActionResult> Index()
     {
-        if (User.Identity.IsAuthenticated)
+        if (User.Identity != null && User.Identity.IsAuthenticated)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -194,8 +195,8 @@ public async Task<IActionResult> UserProfile()
     var model = new UserProfileViewModel
     {
         FullName = user.FullName,
-        PhoneNumber = user.PhoneNumber,
-        Address = user.Address,
+        PhoneNumber = user.PhoneNumber ?? string.Empty,
+        Address = user.Address ?? string.Empty,
         SelectedSkills = user.Skills,
         ProfilePictureUrl = user.ProfilePicturePath,
         CvPdfUrl = user.CvPdfPath
@@ -257,8 +258,8 @@ public async Task<IActionResult> UserCard()
     var model = new UserProfileViewModel
     {
         FullName = user.FullName,
-        PhoneNumber = user.PhoneNumber,
-        Address = user.Address,
+        PhoneNumber = user.PhoneNumber ?? string.Empty,
+        Address = user.Address ?? string.Empty,
         SelectedSkills = user.Skills,
         ProfilePictureUrl = user.ProfilePicturePath,
         CvPdfUrl = user.CvPdfPath
@@ -270,36 +271,35 @@ public async Task<IActionResult> UserCard()
 
  // Méthode pour afficher le CV d'un utilisateur
     [HttpGet]
-    public async Task<IActionResult> UserCvDetails(string userId)
-    {
-        if (string.IsNullOrEmpty(userId))
-        {
-            return NotFound();
-        }
-
-        // Recherche l'utilisateur
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        // Créer un modèle pour afficher le CV
-        var model = new UserCvDetailsViewModel
+[Route("Home/UserCvDetails/{userId}")]
+public async Task<IActionResult> UserCvDetails(string userId)
 {
-    FullName = user.FullName,
-    Email = user.Email,
-    PhoneNumber = user.PhoneNumber,
-    Address = user.Address,
-    Skills = user.Skills ?? new List<string>(),
-    CvPdfPath = user.CvPdfPath,
-    CreatedAt = user.CreatedAt,
-    ProfilePicturePath = user.ProfilePicturePath // 👈 Ajoute ceci
-};
-
-
-        return View(model);
+    if (string.IsNullOrEmpty(userId))
+    {
+        return NotFound();
     }
+
+    var user = await _userManager.FindByIdAsync(userId);
+    if (user == null)
+    {
+        return NotFound();
+    }
+
+    var model = new UserCvDetailsViewModel
+    {
+        FullName = user.FullName,
+        Email = user.Email ?? string.Empty,
+        PhoneNumber = user.PhoneNumber ?? string.Empty,
+        Address = user.Address ?? string.Empty,
+        Skills = user.Skills ?? new List<string>(),
+        CvPdfPath = user.CvPdfPath,
+        CreatedAt = user.CreatedAt,
+        ProfilePicturePath = user.ProfilePicturePath
+    };
+
+    return View(model);
+}
+
         // ✅ Gestion des erreurs
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

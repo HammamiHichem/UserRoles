@@ -11,8 +11,10 @@ namespace UserRoles.ViewModels
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public List<string> Skills { get; set; } = new List<string>();
-        public string ProfilePicturePath { get; set; }
-        public string CvPdfPath { get; set; }
+        public string? ProfilePicturePath { get; set; }
+        public string? CvPdfPath { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool HasProfilePicture => !string.IsNullOrEmpty(ProfilePicturePath);
+
     }
 }
