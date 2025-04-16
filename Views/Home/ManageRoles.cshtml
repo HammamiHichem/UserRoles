@@ -1,0 +1,28 @@
+@model IEnumerable<UserRoles.ViewModels.EditUserRolesViewModel>
+@{
+    ViewData["Title"] = "Gérer les rôles des utilisateurs";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Rôles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserEmail</td>
+                <td>@string.Join(", ", user.Roles.Where(r => r.IsSelected).Select(r => r.RoleName))</td>
+                <td>
+                    <a asp-action="EditUserRoles" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Modifier</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

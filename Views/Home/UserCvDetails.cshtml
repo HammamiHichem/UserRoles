@@ -1,0 +1,65 @@
+@model UserRoles.ViewModels.UserCvDetailsViewModel
+
+@{
+    ViewData["Title"] = "Profil de " + Model.FullName;
+}
+
+<div class="card shadow-lg p-4 mb-5 bg-white rounded">
+    <div class="row">
+        <!-- Photo de profil -->
+        <div class="col-md-4 text-center">
+            @{
+                var ProfilePicturePath = string.IsNullOrEmpty(Model.ProfilePicturePath)
+                    ? Url.Content("~/images/default-profile.png")
+                    : Url.Content("~/uploads/photos/" + Model.ProfilePicturePath.TrimStart('/'));
+            }
+            <img src="@ProfilePicturePath"
+                 alt="Photo de profil"
+                 class="img-thumbnail"
+                 style="max-width: 200px;" />
+        </div>
+
+        <!-- Informations personnelles -->
+        <div class="col-md-8">
+            <h3>@Model.FullName</h3>
+
+            <p><strong>Email :</strong> @(string.IsNullOrEmpty(Model.Email) ? "Non renseigné" : Model.Email)</p>
+            <p><strong>Téléphone :</strong> @(string.IsNullOrEmpty(Model.PhoneNumber) ? "Non renseigné" : Model.PhoneNumber)</p>
+            <p><strong>Adresse :</strong> @(string.IsNullOrEmpty(Model.Address) ? "Non renseignée" : Model.Address)</p>
+            <p><strong>Date de création :</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+
+            <h5 class="mt-4">Compétences techniques</h5>
+            @if (Model.Skills != null && Model.Skills.Any())
+            {
+                <ul>
+                    @foreach (var skill in Model.Skills)
+                    {
+                        <li>@skill</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Aucune compétence enregistrée.</p>
+            }
+
+            <!-- Lien vers le CV PDF -->
+            @if (!string.IsNullOrEmpty(Model.CvPdfPath))
+            {
+                var cleanedCvPath = Model.CvPdfPath.TrimStart('/');
+                var cvUrl = Url.Content("~/" + cleanedCvPath);
+                <div class="mt-4">
+                    <a href="@cvUrl"
+                       class="btn btn-outline-secondary"
+                       target="_blank">
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>Voir le CV
+                    </a>
+                </div>
+            }
+            else
+            {
+                <p class="text-danger mt-3">CV non disponible.</p>
+            }
+        </div>
+    </div>
+</div>

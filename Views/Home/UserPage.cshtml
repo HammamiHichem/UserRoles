@@ -1,0 +1,53 @@
+@model UserRoles.Models.Users
+
+@{
+    Layout = "_Layout"; // Assurez-vous que le layout est bien configuré
+}
+
+<h2>Bienvenue, @Model.FullName !</h2>
+
+<div class="user-profile">
+    <!-- Affichage de la photo de profil -->
+    <div class="profile-picture">
+        @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+        {
+            <img src="@Url.Content("~/images/" + Model.ProfilePicturePath)" alt="Profile Picture" class="img-thumbnail" />
+        }
+        else
+        {
+            <img src="@Url.Content("~/images/default-profile.jpg")" alt="Default Profile Picture" class="img-thumbnail" />
+        }
+    </div>
+
+    <!-- Affichage des compétences -->
+    <div class="skills">
+        <h3>Compétences</h3>
+        @if (Model.Skills != null && Model.Skills.Any())
+        {
+            <ul>
+                @foreach (var skill in Model.Skills)
+                {
+                    <li>@skill</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Aucune compétence ajoutée.</p>
+        }
+    </div>
+
+    <!-- Lien vers le CV -->
+    <div class="cv">
+        <h3>Mon CV</h3>
+        @if (!string.IsNullOrEmpty(Model.CvPdfPath))
+        {
+            <a href="@Url.Content("~/files/" + Model.CvPdfPath)" target="_blank" class="btn btn-primary">Télécharger mon CV</a>
+        }
+        else
+        {
+            <p>Le CV n'est pas encore disponible.</p>
+        }
+    </div>
+</div>
+
