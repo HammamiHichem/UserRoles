@@ -1,22 +1,20 @@
-# Étape 1 : Build de l'application
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+# Étape de build avec le SDK .NET 8.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copier le fichier .csproj et restaurer les dépendances
+COPY ["UserRoles/UserRoles.csproj", "UserRoles/"]
+RUN dotnet restore "UserRoles/UserRoles.csproj"
+
+# Copier tous les fichiers et publier
+COPY . .
+WORKDIR "/src/UserRoles"
+RUN dotnet publish "UserRoles.csproj" -c Release -o /app/publish
+
+# Étape finale avec l'image runtime .NET 8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-
-# Copier les fichiers .csproj et restaurer les dépendances
-COPY *.csproj ./
-RUN dotnet restore
-
-# Copier le reste des fichiers et builder l'application
-COPY . ./
-RUN dotnet publish -c Release -o out
-
-# Étape 2 : Image de runtime
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/out .
-
-# Exposer le port (à ajuster selon ton app)
 EXPOSE 80
-
-# Lancer l'application
+EXPOSE 443
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "UserRoles.dll"]
