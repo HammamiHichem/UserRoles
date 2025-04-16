@@ -1,20 +1,24 @@
-# Étape de build avec le SDK .NET 8.0
+# Étape 1 : build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copier le fichier .csproj et restaurer les dépendances
-COPY ["UserRoles/UserRoles.csproj", "UserRoles/"]
-RUN dotnet restore "UserRoles/UserRoles.csproj"
+# Copier le .csproj (il est à la racine du dépôt)
+COPY *.csproj ./
 
-# Copier tous les fichiers et publier
-COPY . .
-WORKDIR "/src/UserRoles"
-RUN dotnet publish "UserRoles.csproj" -c Release -o /app/publish
+# Restauration des dépendances
+RUN dotnet restore
 
-# Étape finale avec l'image runtime .NET 8.0
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# Copier tout le code et compiler
+COPY . ./
+RUN dotnet publish -c Release -o /app/publish
+
+# Étape 2 : runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+
+# Récupérer les binaires publiés
 COPY --from=build /app/publish .
+
+# Lancer l’application
 ENTRYPOINT ["dotnet", "UserRoles.dll"]
